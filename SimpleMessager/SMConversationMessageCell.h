@@ -7,7 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+@class SMModelMessage;
 
 @interface SMConversationMessageCell : UITableViewCell
+@property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
+@property (weak, nonatomic) IBOutlet UILabel *messgaeLabel;
+
+- (void)setMessage:(SMModelMessage *)message;
 
 @end

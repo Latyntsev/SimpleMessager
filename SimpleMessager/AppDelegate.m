@@ -12,6 +12,10 @@
 NSString *const parseApplicationID = @"";
 NSString *const parseClientKey = @"";
 
+NSString *const XMPP_HOST = @"";
+NSString *const XMPP_LOGIN = @"";
+NSString *const XMPP_PASSWORD = @"";
+
 @interface AppDelegate ()
 
 @end
