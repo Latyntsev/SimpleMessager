@@ -13,7 +13,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *messgaeLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *photoImageView;
 
 - (void)setMessage:(SMModelMessage *)message;
+- (void)setMessage:(SMModelMessage *)message soft:(BOOL)soft;
 
 @end

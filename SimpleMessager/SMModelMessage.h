@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 @class XMPPMessage;
+@class PFObject;
 
 @interface SMModelMessage : NSObject
 
@@ -20,6 +21,7 @@ typedef NS_ENUM(NSInteger, SMMessageMediaTypes) {
 @property (nonatomic,strong) NSString *from;
 @property (nonatomic,strong) NSString *body;
 @property (nonatomic) SMMessageMediaTypes mediaType;
+@property (nonatomic) PFObject *file;
 
 + (instancetype)messageFromXMPPMessage:(XMPPMessage *)message;
 - (XMPPMessage *)toXMPPMessage;

@@ -17,7 +17,7 @@ extern NSString *const XMPP_LOGIN;
 extern NSString *const XMPP_PASSWORD;
 
 
-@interface SMConversationViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface SMConversationViewController () <UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic,strong) XMPPPusher *pusher;
 @property (nonatomic,strong) NSMutableArray *data;
@@ -54,8 +54,10 @@ extern NSString *const XMPP_PASSWORD;
     
     [self.pusher setMessageHandler:^(XMPPPusher *pusher, SMModelMessage *message) {
         [wself.data insertObject:message atIndex:wself.data.count];
-        [wself.tableView reloadData];
+        
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:wself.data.count-1 inSection:0];
+        
+        [wself.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
         [wself.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }];
     
@@ -66,12 +68,7 @@ extern NSString *const XMPP_PASSWORD;
     [self.pusher connecnt];
 }
 
-
 #pragma mark - Actions
-- (IBAction)onClickAddAttachment:(id)sender {
-    
-}
-
 - (IBAction)onClickSend:(id)sender {
     if (self.messageTextField.text.length == 0) {
         return;
@@ -83,6 +80,36 @@ extern NSString *const XMPP_PASSWORD;
     
     [self.pusher sendMessage:messgae];
     self.messageTextField.text = @"";
+}
+
+- (IBAction)onClickAddAttachment:(id)sender {
+    UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
+    pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    pickerLibrary.delegate = self;
+    [self presentViewController:pickerLibrary animated:YES completion:nil];
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+{
+    NSData *data = UIImageJPEGRepresentation(image, 0.6);
+    
+    PFObject *fileObject = [PFObject objectWithClassName:@"File"];
+    fileObject[@"file"] = [PFFile fileWithName:@"image.jpg" data:data];
+    
+    [fileObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            
+            SMModelMessage *messgae = [[SMModelMessage alloc] init];
+            messgae.body = [fileObject objectId];
+            messgae.from = [PFUser currentUser][@"userName"];
+            messgae.mediaType = SMMessageMediaType_image;
+            [self.pusher sendMessage:messgae];
+            self.messageTextField.text = @"";
+            
+        }
+    }];
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Keyboard Notifications
@@ -104,7 +131,6 @@ extern NSString *const XMPP_PASSWORD;
 - (void)kayboadWillHide:(NSNotification *)notification {
    
     NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    
     [UIView animateWithDuration:duration animations:^{
         
          self.messageBoxBottmMargin.constant = 0;
@@ -117,22 +143,36 @@ extern NSString *const XMPP_PASSWORD;
     return self.data.count;
 }
 
+- (NSString *)cellIdentifierWithMediaType:(SMMessageMediaTypes)mediaType {
+    switch (mediaType) {
+        case SMMessageMediaType_text:
+            return @"SMConversationMessageCell_text";
+            break;
+            
+        case SMMessageMediaType_image:
+            return @"SMConversationMessageCell_image";
+            break;
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SMConversationMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SMConversationMessageCell"];
     
     SMModelMessage *message = self.data[indexPath.row];
-    [cell setMessage:message];
+    NSString *cellIdentifier = [self cellIdentifierWithMediaType:message.mediaType];
+    SMConversationMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    [cell setMessage:message soft:YES];
     [cell.contentView layoutIfNeeded];
     CGSize size = [cell.contentView systemLayoutSizeFittingSize:(CGSize){tableView.frame.size.width,10}];
-    
-    return size.height;
+    cell.frame = (CGRect){cell.frame.origin,size};
+    return size.height + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    SMConversationMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SMConversationMessageCell"
-                                                                      forIndexPath:indexPath];
-    
     SMModelMessage *message = self.data[indexPath.row];
+    NSString *cellIdentifier = [self cellIdentifierWithMediaType:message.mediaType];
+    SMConversationMessageCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
     [cell setMessage:message];
     return cell;
 }

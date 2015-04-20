@@ -28,11 +28,11 @@ NSString *const XMPP_PASSWORD = @"";
     [Parse enableLocalDatastore];
     [PFUser enableAutomaticUser];
     // Initialize Parse.
-    [Parse setApplicationId:parseApplicationID
-                  clientKey:parseClientKey];
+    [Parse setApplicationId:parseApplicationID clientKey:parseClientKey];
     
     // [Optional] Track statistics around application opens.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
     return YES;
 }
 
