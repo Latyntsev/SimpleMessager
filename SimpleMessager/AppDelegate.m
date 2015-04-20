@@ -7,6 +7,14 @@
 //
 
 #import "AppDelegate.h"
+#import <Parse/Parse.h>
+
+NSString *const parseApplicationID = @"";
+NSString *const parseClientKey = @"";
+
+NSString *const XMPP_HOST = @"";
+NSString *const XMPP_LOGIN = @"";
+NSString *const XMPP_PASSWORD = @"";
 
 @interface AppDelegate ()
 
@@ -17,6 +25,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [Parse enableLocalDatastore];
+    [PFUser enableAutomaticUser];
+    // Initialize Parse.
+    [Parse setApplicationId:parseApplicationID clientKey:parseClientKey];
+    
+    // [Optional] Track statistics around application opens.
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
     return YES;
 }
 
