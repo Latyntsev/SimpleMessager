@@ -17,7 +17,7 @@ extern NSString *const XMPP_LOGIN;
 extern NSString *const XMPP_PASSWORD;
 
 
-@interface SMConversationViewController () <UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface SMConversationViewController () <UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIActionSheetDelegate>
 
 @property (nonatomic,strong) XMPPPusher *pusher;
 @property (nonatomic,strong) NSMutableArray *data;
@@ -83,8 +83,21 @@ extern NSString *const XMPP_PASSWORD;
 }
 
 - (IBAction)onClickAddAttachment:(id)sender {
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Send Photo" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Photo Librart",@"Camera", nil];
+    
+    [actionSheet showInView:self.view];
+    
+    
+}
+
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    UIImagePickerControllerSourceType type = buttonIndex;
+    
     UIImagePickerController *pickerLibrary = [[UIImagePickerController alloc] init];
-    pickerLibrary.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    pickerLibrary.sourceType = type;
     pickerLibrary.delegate = self;
     [self presentViewController:pickerLibrary animated:YES completion:nil];
 }
@@ -106,7 +119,6 @@ extern NSString *const XMPP_PASSWORD;
             messgae.mediaType = SMMessageMediaType_image;
             [self.pusher sendMessage:messgae];
             self.messageTextField.text = @"";
-            
         }
     }];
     [picker dismissViewControllerAnimated:YES completion:nil];
