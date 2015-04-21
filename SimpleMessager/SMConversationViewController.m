@@ -21,13 +21,16 @@ extern NSString *const XMPP_PASSWORD;
 
 @property (nonatomic,strong) XMPPPusher *pusher;
 @property (nonatomic,strong) NSMutableArray *data;
-
+@property (nonatomic,strong) NSOperationQueue *queue;
 @end
 
 @implementation SMConversationViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.queue = [[NSOperationQueue alloc] init];
+    self.queue.maxConcurrentOperationCount = 1;
+    
     self.data = [NSMutableArray array];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(kayboadWillShow:)
@@ -41,6 +44,7 @@ extern NSString *const XMPP_PASSWORD;
     
     
     __weak typeof(self) wself = self;
+    [self.activityIndicator startAnimating];
     self.pusher = [[XMPPPusher alloc] initWithHost:XMPP_HOST
                                              login:XMPP_LOGIN
                                        andPassword:XMPP_PASSWORD];
@@ -49,16 +53,25 @@ extern NSString *const XMPP_PASSWORD;
         if (connected) {
             [wself.data removeAllObjects];
             [pusher joinRoom:@"test" withNickName:[PFUser currentUser][@"userName"]];
+            [wself.activityIndicator stopAnimating];
+        } else {
+            [wself.activityIndicator startAnimating];
         }
     }];
+    
+    
     
     [self.pusher setMessageHandler:^(XMPPPusher *pusher, SMModelMessage *message) {
         [wself.data insertObject:message atIndex:wself.data.count];
         
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:wself.data.count-1 inSection:0];
         
-        [wself.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        [wself.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+        [wself.tableView insertRowsAtIndexPaths:@[indexPath]
+                               withRowAnimation:UITableViewRowAnimationNone];
+        
+        [wself.tableView scrollToRowAtIndexPath:indexPath
+                               atScrollPosition:UITableViewScrollPositionBottom
+                                       animated:YES];
     }];
     
     [self.pusher setErrorHandler:^(XMPPPusher *pusher, NSError *error) {
@@ -78,7 +91,13 @@ extern NSString *const XMPP_PASSWORD;
     messgae.body = self.messageTextField.text;
     messgae.from = [PFUser currentUser][@"userName"];
     
-    [self.pusher sendMessage:messgae];
+    
+    [self.queue addOperationWithBlock:^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.pusher sendMessage:messgae];
+        }];
+    }];
+    
     self.messageTextField.text = @"";
 }
 
@@ -105,22 +124,28 @@ extern NSString *const XMPP_PASSWORD;
 #pragma mark - UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
 {
+    
+    [self.activityIndicator startAnimating];
     NSData *data = UIImageJPEGRepresentation(image, 0.6);
     
-    PFObject *fileObject = [PFObject objectWithClassName:@"File"];
-    fileObject[@"file"] = [PFFile fileWithName:@"image.jpg" data:data];
     
-    [fileObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            
-            SMModelMessage *messgae = [[SMModelMessage alloc] init];
-            messgae.body = [fileObject objectId];
-            messgae.from = [PFUser currentUser][@"userName"];
-            messgae.mediaType = SMMessageMediaType_image;
-            [self.pusher sendMessage:messgae];
-            self.messageTextField.text = @"";
+    [self.queue addOperationWithBlock:^{
+        PFObject *fileObject = [PFObject objectWithClassName:@"File"];
+        fileObject[@"file"] = [PFFile fileWithName:@"image.jpg" data:data];
+        if ([fileObject save]) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self.activityIndicator stopAnimating];
+                SMModelMessage *messgae = [[SMModelMessage alloc] init];
+                messgae.body = [fileObject objectId];
+                messgae.from = [PFUser currentUser][@"userName"];
+                messgae.mediaType = SMMessageMediaType_image;
+                [self.pusher sendMessage:messgae];
+                self.messageTextField.text = @"";
+            }];
         }
     }];
+    
+    
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 

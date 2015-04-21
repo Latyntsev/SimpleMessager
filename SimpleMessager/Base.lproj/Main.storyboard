@@ -219,8 +219,23 @@
                             <constraint firstItem="me6-4S-tl5" firstAttribute="top" secondItem="Z9T-8l-pOr" secondAttribute="bottom" id="tSJ-uc-DYL"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="CONVERSATION" id="n9i-xA-ojQ"/>
+                    <navigationItem key="navigationItem" title="Title" id="WhO-EI-MC9">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="kTn-3y-Sp1">
+                            <view key="customView" contentMode="scaleToFill" id="0YL-Kk-fKK">
+                                <rect key="frame" x="564" y="5" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="fhF-I4-YTJ">
+                                        <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
+                                    </activityIndicatorView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
+                        <outlet property="activityIndicator" destination="fhF-I4-YTJ" id="5G7-Og-iuP"/>
                         <outlet property="messageBoxBottmMargin" destination="tSJ-uc-DYL" id="eMc-ql-RY1"/>
                         <outlet property="messageTextField" destination="X6v-fB-ANR" id="HB7-cI-JLO"/>
                         <outlet property="tableView" destination="eJz-7u-yqt" id="BtY-JB-WAx"/>
