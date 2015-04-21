@@ -22,11 +22,13 @@ extern NSString *const XMPP_PASSWORD;
 @property (nonatomic,strong) XMPPPusher *pusher;
 @property (nonatomic,strong) NSMutableArray *data;
 @property (nonatomic,strong) NSOperationQueue *queue;
+
 @end
 
 @implementation SMConversationViewController
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     self.queue = [[NSOperationQueue alloc] init];
     self.queue.maxConcurrentOperationCount = 1;
@@ -52,7 +54,7 @@ extern NSString *const XMPP_PASSWORD;
     [self.pusher setConnectionHandler:^(XMPPPusher *pusher, BOOL connected) {
         if (connected) {
             [wself.data removeAllObjects];
-            [pusher joinRoom:@"test" withNickName:[PFUser currentUser][@"userName"]];
+            [pusher joinRoom:@"test" withNickName:wself.nickName];
             [wself.activityIndicator stopAnimating];
         } else {
             [wself.activityIndicator startAnimating];
@@ -89,7 +91,7 @@ extern NSString *const XMPP_PASSWORD;
     
     SMModelMessage *messgae = [[SMModelMessage alloc] init];
     messgae.body = self.messageTextField.text;
-    messgae.from = [PFUser currentUser][@"userName"];
+    messgae.from = self.nickName;
     
     
     [self.queue addOperationWithBlock:^{
@@ -137,7 +139,7 @@ extern NSString *const XMPP_PASSWORD;
                 [self.activityIndicator stopAnimating];
                 SMModelMessage *messgae = [[SMModelMessage alloc] init];
                 messgae.body = [fileObject objectId];
-                messgae.from = [PFUser currentUser][@"userName"];
+                messgae.from = self.nickName;
                 messgae.mediaType = SMMessageMediaType_image;
                 [self.pusher sendMessage:messgae];
                 self.messageTextField.text = @"";

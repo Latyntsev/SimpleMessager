@@ -7,11 +7,19 @@
 //
 
 #import "SMInboxViewController.h"
-#import <Parse/Parse.h>
+#import "SMConversationViewController.h"
 
 NSString *const kShowConversationSegue = @"ShowConversationSegue";
 
+@interface SMInboxViewController ()
+
+@property (nonatomic,strong) NSString *nickName;
+
+@end
+
 @implementation SMInboxViewController
+
+@dynamic nickName;
 
 - (IBAction)onClickJoinRoom:(id)sender {
     
@@ -22,7 +30,7 @@ NSString *const kShowConversationSegue = @"ShowConversationSegue";
                                              otherButtonTitles:@"Confirm",nil];
     
     alerView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    [alerView textFieldAtIndex:0].text = [PFUser currentUser][@"userName"];
+    [alerView textFieldAtIndex:0].text = self.nickName;
     [alerView textFieldAtIndex:0].placeholder = @"Enter Your name";
     [alerView show];
 }
@@ -38,13 +46,28 @@ NSString *const kShowConversationSegue = @"ShowConversationSegue";
         return;
     }
     
-    NSString *userName = [alertView textFieldAtIndex:0].text;
-    PFUser *user = [PFUser currentUser];
-    user[@"userName"] = userName;
-    
-    [user saveInBackground];
-    
-    [self performSegueWithIdentifier:kShowConversationSegue sender:nil];
+    NSString *nickName = [alertView textFieldAtIndex:0].text;
+    if (nickName.length > 0) {
+        
+        self.nickName = nickName;
+        [self performSegueWithIdentifier:kShowConversationSegue
+                                  sender:nickName];
+    }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:kShowConversationSegue]) {
+        SMConversationViewController *vc = segue.destinationViewController;
+        vc.nickName = sender;
+    }
+}
+
+- (void)setNickName:(NSString *)nickName {
+    [[NSUserDefaults standardUserDefaults] setValue:nickName forKey:@"nickName"];
+}
+
+- (NSString *)nickName {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:@"nickName"];
 }
 
 

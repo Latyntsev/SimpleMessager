@@ -15,4 +15,6 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageBoxBottmMargin;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
+@property (nonatomic,strong) NSString *nickName;
+
 @end
