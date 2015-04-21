@@ -13,5 +13,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UITextField *messageTextField;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageBoxBottmMargin;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end
