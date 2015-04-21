@@ -24,9 +24,11 @@
 }
 
 - (void)setMessage:(SMModelMessage *)message soft:(BOOL)soft {
+    
     if (_message == message) {
         return;
     }
+    
     _message = message;
     static NSDateFormatter *df;
     if (!df) {
@@ -43,8 +45,9 @@
             break;
             
         case SMMessageMediaType_image: {
-            
+            [self.loadingIndicator startAnimating];
             self.photoImageView.layer.cornerRadius = 5;
+            self.photoImageView.image = nil;
             if (!soft) {
                 void(^LoadImage)() = ^() {
                     PFFile *file = message.file[@"file"];
@@ -59,6 +62,7 @@
                         if (!error) {
                             UIImage *image = [UIImage imageWithData:data scale:[UIScreen mainScreen].scale];
                             self.photoImageView.image = image;
+                            [self.loadingIndicator stopAnimating];
                         }
                     }];
                 };
@@ -74,21 +78,10 @@
                         if (error) {
                             return;
                         }
+                        
                         message.file = object;
                         
-                        PFFile *file = message.file[@"file"];
-                        if (self.message != message) {
-                            return;
-                        }
-                        [file getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
-                            if (self.message != message) {
-                                return;
-                            }
-                            if (!error) {
-                                UIImage *image = [UIImage imageWithData:data scale:[UIScreen mainScreen].scale];
-                                self.photoImageView.image = image;
-                            }
-                        }];
+                        LoadImage();
                     }];
                 }
             }

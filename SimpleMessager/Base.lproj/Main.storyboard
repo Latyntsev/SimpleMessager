@@ -140,17 +140,23 @@
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="LF6-qa-Rv9">
                                                     <rect key="frame" x="8" y="31" width="584" height="229"/>
+                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="LF6-qa-Rv9" secondAttribute="height" multiplier="4:3" priority="900" id="NGZ-q8-UsK"/>
                                                     </constraints>
                                                 </imageView>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="HdU-gh-cz3">
+                                                    <rect key="frame" x="290" y="136" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="LF6-qa-Rv9" secondAttribute="trailing" id="3tH-RV-Q9b"/>
                                                 <constraint firstItem="KOh-JJ-5cW" firstAttribute="leading" secondItem="xXc-BA-Y0a" secondAttribute="trailing" constant="8" id="6mq-cE-igi"/>
+                                                <constraint firstItem="LF6-qa-Rv9" firstAttribute="centerX" secondItem="HdU-gh-cz3" secondAttribute="centerX" id="80A-ha-wJ1"/>
                                                 <constraint firstItem="LF6-qa-Rv9" firstAttribute="leading" secondItem="4aL-tI-kpd" secondAttribute="leadingMargin" id="J8o-yO-d1s"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="LF6-qa-Rv9" secondAttribute="bottom" id="Q5k-Gq-NNm"/>
                                                 <constraint firstItem="KOh-JJ-5cW" firstAttribute="centerY" secondItem="xXc-BA-Y0a" secondAttribute="centerY" id="VX8-pb-pNg"/>
+                                                <constraint firstItem="LF6-qa-Rv9" firstAttribute="centerY" secondItem="HdU-gh-cz3" secondAttribute="centerY" id="W05-zP-8cz"/>
                                                 <constraint firstItem="LF6-qa-Rv9" firstAttribute="top" secondItem="xXc-BA-Y0a" secondAttribute="bottom" constant="8" id="Y4W-th-sVB"/>
                                                 <constraint firstItem="xXc-BA-Y0a" firstAttribute="leading" secondItem="4aL-tI-kpd" secondAttribute="leadingMargin" id="cBP-Hf-OBP"/>
                                                 <constraint firstItem="xXc-BA-Y0a" firstAttribute="top" secondItem="4aL-tI-kpd" secondAttribute="topMargin" id="rB8-wX-VeR"/>
@@ -158,6 +164,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="dateLabel" destination="KOh-JJ-5cW" id="2bI-xM-cT1"/>
+                                            <outlet property="loadingIndicator" destination="HdU-gh-cz3" id="Dbv-Gk-NMN"/>
                                             <outlet property="photoImageView" destination="LF6-qa-Rv9" id="Gd4-q4-O1h"/>
                                             <outlet property="userNameLabel" destination="xXc-BA-Y0a" id="MTy-TO-2vB"/>
                                         </connections>
@@ -219,7 +226,7 @@
                             <constraint firstItem="me6-4S-tl5" firstAttribute="top" secondItem="Z9T-8l-pOr" secondAttribute="bottom" id="tSJ-uc-DYL"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="WhO-EI-MC9">
+                    <navigationItem key="navigationItem" title="CONVERSATION" id="WhO-EI-MC9">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="kTn-3y-Sp1">
                             <view key="customView" contentMode="scaleToFill" id="0YL-Kk-fKK">
                                 <rect key="frame" x="564" y="5" width="20" height="20"/>
